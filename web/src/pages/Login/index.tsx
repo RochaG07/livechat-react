@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Input from '../../components/Input';
 
@@ -8,6 +8,12 @@ import { useHistory } from 'react-router-dom';
 import { FormHandles } from '@unform/core';
 
 import socket from "../../services/socket";
+import Select from '../../components/Select';
+
+interface IOptions {
+    label: string,
+    value: string,
+}
 
 const Login: React.FC = () => {
     const {login} = useAuth();
@@ -16,21 +22,27 @@ const Login: React.FC = () => {
     const history = useHistory();
 
     function handleSubmit(data: any):void {
+        login(data);
 
-        login({
-            username: data.username, 
-        });
+        socket.emit('login', data);
 
-        socket.emit('login', data.username);
-
-       history.push('/chat');
+        history.push('/chat');
     }
 
     return(
         <Container> 
-               
             <Form ref={formRef} onSubmit={handleSubmit}>
                 <Input type="text" name="username" placeholder="Digite seu nome"/>
+
+                <Select
+                    name="sala"
+                    placeholder="Selecione a sala"
+                    options={[
+                        {label: 'Sala 1',value:'1'},
+                        {label: 'Sala 2',value:'2'}
+                    ]}
+                />
+                
                 <button type='submit'>Enter</button>    
             </Form>         
         </Container>
